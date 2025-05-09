@@ -61,10 +61,10 @@ class GUI(QWidget):
         button_row_layout = QHBoxLayout()
         button_row_layout.addLayout(self.button_layout)
         
+        
         self.layout.addLayout(button_row_layout)
 
         # Add stretch to the main layout
-        self.layout.addStretch()
 
         self.name_label = QLabel("Base Name:")
         self.layout.addWidget(self.name_label)
