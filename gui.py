@@ -1,14 +1,22 @@
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QTableWidget, QTableWidgetItem,
                              QFileDialog, QLabel, QLineEdit, QCheckBox, QFrame)
-from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtCore import Qt, QPoint, QSize
 import os
+from PyQt5 import QtGui
 
 class GUI(QWidget):
     def __init__(self, file_operations):
         super().__init__()
         self.file_operations = file_operations
         self.setWindowTitle("RenaMe")
+
+        app_icon = QtGui.QIcon()
+        app_icon.addFile("pen 16.png", QSize(16, 16))
+        app_icon.addFile("pen 32.png", QSize(32, 32))
+        app_icon.addFile("pen 256.png", QSize(256, 256))
+        self.setWindowIcon(app_icon)
+
 
         # Apply dark theme and gradient background
         self.setStyleSheet("""
@@ -52,11 +60,16 @@ class GUI(QWidget):
         self.select_all_button.clicked.connect(self.select_all)
         self.select_all_button.setStyleSheet(button_style)
         self.button_layout.addWidget(self.select_all_button, 1)
-
+        
         self.rename_button = QPushButton("Rename Files")
         self.rename_button.clicked.connect(self.rename_files)
         self.rename_button.setStyleSheet(button_style)
         self.button_layout.addWidget(self.rename_button, 1)
+        
+        self.undo_button = QPushButton("Undo")
+        self.undo_button.clicked.connect(self.file_operations.undo_rename)
+        self.undo_button.setStyleSheet(button_style)
+        self.button_layout.addWidget(self.undo_button, 1)
         
         button_row_layout = QHBoxLayout()
         button_row_layout.addLayout(self.button_layout)

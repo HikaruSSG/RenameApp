@@ -5,6 +5,7 @@ import re
 class FileOperations:
     def __init__(self):
         self.folder_path = None
+        self.previous_names = {}
 
     def set_folder_path(self, folder_path):
         self.folder_path = folder_path
@@ -33,7 +34,17 @@ class FileOperations:
                 file_ext = Path(file_name).suffix
                 new_name = base_name + str(i+1) + file_ext
                 dst = os.path.join(self.folder_path, new_name)
+                self.previous_names[dst] = src
                 os.rename(src, dst)
+
+    def undo_rename(self):
+        if not self.folder_path:
+            return
+
+        for dst, src in self.previous_names.items():
+            if os.path.isfile(dst):
+                os.rename(dst, src)
+        self.previous_names = {}
 
     def natural_sort_key(self, s):
         return [int(text) if text.isdigit() else text.lower()
