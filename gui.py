@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QTableWidget, QTableWidgetItem,
-                             QFileDialog, QLabel, QLineEdit, QCheckBox, QFrame)
+                             QFileDialog, QLabel, QLineEdit, QCheckBox, QFrame, QMessageBox)
 from PyQt5.QtCore import Qt, QPoint, QSize
 import os
 from PyQt5 import QtGui
+from file_operations import FileNameTooLongError
 
 class GUI(QWidget):
     def __init__(self, file_operations):
@@ -176,8 +177,13 @@ class GUI(QWidget):
                 files_with_order.append((order, name))
 
         ordered_files = [name for order, name in sorted(files_with_order)]
-        self.file_operations.rename_files(base_name, ordered_files)
-        self.populate_table()
+        try:
+            self.file_operations.rename_files(base_name, ordered_files)
+            self.populate_table()
+        except FileNameTooLongError as e:
+            QMessageBox.critical(self, "Renaming Error", str(e))
+        except Exception as e:
+            QMessageBox.critical(self, "An Unexpected Error Occurred", str(e))
 
     def select_all(self):
         # Determine the current check state of the first checkbox

@@ -1,6 +1,11 @@
 import os
 from pathlib import Path
 import re
+import errno
+
+class FileNameTooLongError(Exception):
+    """Custom exception for when a filename is too long."""
+    pass
 
 class FileOperations:
     def __init__(self):
@@ -35,7 +40,13 @@ class FileOperations:
                 new_name = base_name + str(i+1) + file_ext
                 dst = os.path.join(self.folder_path, new_name)
                 self.previous_names[dst] = src
-                os.rename(src, dst)
+                try:
+                    os.rename(src, dst)
+                except OSError as e:
+                    if e.errno == errno.ENAMETOOLONG:
+                        raise FileNameTooLongError(f"The new file name '{new_name}' is too long.")
+                    else:
+                        raise # Re-raise other OS errors
 
     def undo_rename(self):
         if not self.folder_path:
